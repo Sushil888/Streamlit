@@ -8,9 +8,17 @@ from sklearn.preprocessing import StandardScaler
 jamboree = pd.read_csv('./Jamboree_Admission.csv')
 st.write('''# Jamboree Admission Data''')
 st.dataframe(jamboree.head())
+try:
+    with open('scaler.pkl', 'rb') as scaler_file:
+        scaler = pickle.load(scaler_file)
+except FileNotFoundError:
+    st.error("Scaler file not found. Please ensure 'scaler.pkl' is in the directory.")
 
-with open('scaler.pkl', 'rb') as file:
-    scaler = pickle.load(file)
+try:
+    with open('jamboree_model.pkl', 'rb') as file:
+     reg_model = pickle.load(file)
+except FileNotFoundError:
+    st.error("Model file not found. Please ensure 'jamboree_model.pkl' is in the directory.")
 
 col1, col2 = st.columns(2)
 
@@ -26,18 +34,17 @@ with col2:
 
 # input_features = ['GRE Score', 'TOEFL Score', 'University Rating', 'LOR', 'CGPA', 'research']
 def model_pred(GRE_Score, TOEFL_Score, University_Rating, LOR, CGPA, Research):
-    with open('jamboree_model.pkl', 'rb') as file:
-        reg_model = pickle.load(file)
-        input_features = pd.DataFrame([[GRE_Score, TOEFL_Score, University_Rating, LOR, CGPA, Research]], 
-                                  columns=['GRE Score', 'TOEFL Score', 'University Rating', 'LOR', 'CGPA', 'Research'])
-        
-        input_features_scaled = scaler.transform(input_features)
-        return reg_model.predict(input_features_scaled)
+    
+    input_features = pd.DataFrame([[GRE_Score, TOEFL_Score, University_Rating, LOR, CGPA, Research]], 
+                                columns=['GRE Score', 'TOEFL Score', 'University Rating', 'LOR', 'CGPA', 'Research'])
+    
+    input_features_scaled = scaler.transform(input_features)
+    return reg_model.predict(input_features_scaled)
 
 if (st.button('Predict the Chance of Admission')):
     Admission_Probability = model_pred(GRE_Score, TOEFL_Score, University_Rating, LOR, CGPA, Research)
 
-    st.text(f'The probability of admission is {Admission_Probability}%')
+    st.text(f'The probability of admission is {(Admission_Probability[0]*100).round(2)}%')
 
 
 
