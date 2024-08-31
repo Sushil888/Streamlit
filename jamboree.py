@@ -8,17 +8,11 @@ from sklearn.preprocessing import StandardScaler
 jamboree = pd.read_csv('./Jamboree_Admission.csv')
 st.write('''# Jamboree Admission Data''')
 st.dataframe(jamboree.head())
-try:
-    with open('scaler.pkl', 'rb') as scaler_file:
-        scaler = pickle.load(scaler_file)
-except FileNotFoundError:
-    st.error("Scaler file not found. Please ensure 'scaler.pkl' is in the directory.")
 
-try:
-    with open('jamboree_model.pkl', 'rb') as file:
-     reg_model = pickle.load(file)
-except FileNotFoundError:
-    st.error("Model file not found. Please ensure 'jamboree_model.pkl' is in the directory.")
+with open('scaler.pkl', 'rb') as scaler_file:
+    scaler = pickle.load(scaler_file)
+with open('jamboree_model.pkl', 'rb') as file:
+    reg_model = pickle.load(file)
 
 col1, col2 = st.columns(2)
 
